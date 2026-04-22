@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Heart AI · Felipe Correa</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--red:#ef4444;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;--bg:#0a0f1e;--card:#111827;--border:#1f2937;--text:#f9fafb;--muted:#9ca3af}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--blue);text-decoration:none}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 20px;background:radial-gradient(ellipse at 50% 0%,rgba(239,68,68,0.15),transparent 65%),radial-gradient(ellipse at 80% 80%,rgba(59,130,246,0.1),transparent 60%)}
+.hero-eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:16px;padding:6px 16px;border:1px solid rgba(239,68,68,.3);border-radius:20px;display:inline-block}
+.hero h1{font-size:clamp(2.4rem,6vw,4.8rem);font-weight:900;line-height:1.1;max-width:860px}
+.hero h1 span{background:linear-gradient(to right,#ef4444,#f97316,#eab308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{margin-top:20px;font-size:1.1rem;color:var(--muted);max-width:600px}
+.hero-stats{display:flex;gap:32px;margin-top:48px;flex-wrap:wrap;justify-content:center}
+.hero-stat{text-align:center}
+.hero-stat .num{font-size:2.4rem;font-weight:800;line-height:1}
+.hero-stat .lbl{font-size:.78rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.stat-red .num{color:var(--red)}
+.stat-blue .num{color:var(--blue)}
+.stat-green .num{color:var(--green)}
+.stat-purple .num{color:var(--purple)}
+.scroll-hint{margin-top:60px;color:var(--muted);font-size:.82rem;display:flex;flex-direction:column;align-items:center;gap:8px;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* ── LAYOUT ── */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+section{padding:80px 0}
+
+/* ── STORY ── */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.story-text h2{font-size:2rem;font-weight:800;margin-bottom:16px}
+.story-text h2 span{color:var(--red)}
+.story-text p{color:var(--muted);font-size:1rem;line-height:1.85;margin-bottom:16px}
+.quote{border-left:3px solid var(--red);padding:16px 20px;background:rgba(239,68,68,.06);border-radius:0 10px 10px 0;margin-top:24px;font-style:italic;color:#fca5a5;font-size:.95rem;line-height:1.75}
+.big-number{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;text-align:center}
+.big-number .n{font-size:6rem;font-weight:900;line-height:1;background:linear-gradient(to bottom,#ef4444,#7f1d1d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.big-number p{color:var(--muted);font-size:.9rem;margin-top:8px;line-height:1.6}
+
+/* ── CARDS ── */
+.section-label{font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.section-title{font-size:2rem;font-weight:800;margin-bottom:8px}
+.section-sub{color:var(--muted);font-size:.95rem;margin-bottom:48px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px}
+.chart-card h3{font-size:1rem;font-weight:600;margin-bottom:4px}
+.chart-card p{font-size:.82rem;color:var(--muted);margin-bottom:20px}
+.chart-wrap{position:relative;height:240px}
+
+/* ── FEATURES ── */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;transition:border-color .25s,transform .25s}
+.feat-card:hover{border-color:var(--red);transform:translateY(-4px)}
+.feat-icon{font-size:2rem;margin-bottom:12px}
+.feat-card h4{font-size:1rem;font-weight:700;margin-bottom:6px}
+.feat-card p{font-size:.85rem;color:var(--muted);line-height:1.65}
+.feat-highlight{color:var(--red);font-weight:700}
+
+/* ── MODEL ── */
+.model-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center}
+.step-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#b91c1c);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;margin:0 auto 14px}
+.step h4{font-size:.95rem;font-weight:700;margin-bottom:6px}
+.step p{font-size:.82rem;color:var(--muted);line-height:1.6}
+
+/* ── RESULT ── */
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.metric-list{display:flex;flex-direction:column;gap:16px}
+.metric-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px}
+.metric-item .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.metric-item .name{font-size:.9rem;font-weight:600}
+.metric-item .value{font-size:1.3rem;font-weight:800;color:var(--green)}
+.bar-bg{background:#1f2937;border-radius:4px;height:6px}
+.bar-fill{height:6px;border-radius:4px;background:linear-gradient(to right,#10b981,#059669)}
+.insight-box{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(139,92,246,.08));border:1px solid rgba(239,68,68,.2);border-radius:16px;padding:32px}
+.insight-box h3{font-size:1.3rem;font-weight:800;margin-bottom:20px}
+.insight-item{display:flex;gap:12px;margin-bottom:18px;align-items:flex-start}
+.insight-dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
+.insight-item p{font-size:.9rem;color:var(--muted);line-height:1.65}
+.insight-item strong{color:var(--text)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:40px 0;text-align:center}
+footer p{color:var(--muted);font-size:.88rem;margin-bottom:10px}
+.footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.footer-links a{color:var(--muted);font-size:.85rem;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+@media(max-width:768px){
+  .story-grid,.charts-grid,.result-grid{grid-template-columns:1fr}
+  .features-grid,.model-steps{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+  .features-grid,.model-steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <span class="hero-eyebrow">Portfólio · Machine Learning · Saúde</span>
+  <h1>Quando os dados<br><span>salvam vidas</span></h1>
+  <p class="hero-sub">Uma exploração humana e técnica do dataset Statlog Heart Disease — 270 pacientes, 13 variáveis, 1 pergunta: seu coração está bem?</p>
+  <div class="hero-stats">
+    <div class="hero-stat stat-red"><div class="num" id="n-total">270</div><div class="lbl">Pacientes</div></div>
+    <div class="hero-stat stat-blue"><div class="num">13</div><div class="lbl">Atributos</div></div>
+    <div class="hero-stat stat-green"><div class="num" id="n-acc">85%</div><div class="lbl">Acurácia</div></div>
+    <div class="hero-stat stat-purple"><div class="num" id="n-disease">150</div><div class="lbl">Com doença</div></div>
+  </div>
+  <div class="scroll-hint"><span>Role para explorar</span><span>↓</span></div>
+</section>
+
+<!-- ══ STORY ══ -->
+<section>
+  <div class="container">
+    <div class="story-grid">
+      <div class="story-text">
+        <div class="section-label">Por que este projeto</div>
+        <h2>Não é só um <span>modelo</span>. É uma história real.</h2>
+        <p>Quando comecei a explorar Machine Learning, queria trabalhar com algo que tivesse peso real. Não MNIST, não flores. Escolhi este dataset porque doenças cardíacas são a <strong>principal causa de morte no mundo</strong> — e achei que um desenvolvedor poderia contribuir de verdade com isso.</p>
+        <p>O dataset Statlog Heart Disease, do repositório UCI, traz informações de 270 indivíduos com 13 variáveis clínicas. Nenhum valor ausente. Uma tarefa clara: prever se a pessoa <em>tem</em> ou <em>não tem</em> doença cardíaca.</p>
+        <div class="quote">"Um modelo de ML bem treinado não substitui um médico — mas pode ser o sinal de alerta que chega antes da crise."</div>
+      </div>
+      <div class="big-number">
+        <div class="n">55%</div>
+        <p>dos pacientes do dataset<br>apresentam algum sinal de<br><strong style="color:#fca5a5">doença cardíaca</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EDA ══ -->
+<section>
+  <div class="container">
+    <div class="section-label">Análise Exploratória</div>
+    <div class="section-title">O que os dados nos contam</div>
+    <p class="section-sub">Antes de qualquer modelo, os dados já revelam padrões importantes sobre quem está em risco.</p>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Distribuição por Sexo</h3>
+        <p>Homens são maioria e com maior incidência relativa de doença.</p>
+        <div class="chart-wrap"><canvas id="chartSex"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Tipo de Dor no Peito (cp)</h3>
+        <p>Assintomáticos (tipo 3) são surpreendentemente os mais afetados.</p>
+        <div class="chart-wrap"><canvas id="chartCp"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Faixa Etária vs Doença</h3>
+        <p>Risco cresce com a idade, especialmente acima dos 55 anos.</p>
+        <div class="chart-wrap"><canvas id="chartAge"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Frequência Cardíaca Máxima</h3>
+        <p>Pacientes saudáveis atingem frequências mais altas no esforço.</p>
+        <div class="chart-wrap"><canvas id="chartThalach"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section>
+  <div class="container">
+    <div class="section-label">Variáveis de Maior Impacto</div>
+    <div class="section-title">O que mais pesa no diagnóstico</div>
+    <p class="section-sub">Algumas variáveis se destacam pela correlação com o target durante a análise exploratória.</p>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">💓</div>
+        <h4>thalach</h4>
+        <p>Frequência cardíaca máxima. Pacientes com doença tendem a atingir <span class="feat-highlight">frequências menores</span> durante o esforço — um sinal importante de comprometimento.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📉</div>
+        <h4>oldpeak</h4>
+        <p>Depressão do segmento ST no exercício. Valores altos indicam <span class="feat-highlight">isquemia miocárdica</span> — baixo fluxo de sangue no coração durante esforço.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🩸</div>
+        <h4>ca</h4>
+        <p>Número de vasos principais coloridos pela fluoroscopia. Quanto <span class="feat-highlight">mais vasos afetados</span>, maior a correlação com a presença de doença.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧬</div>
+        <h4>thal</h4>
+        <p>Resultado do teste de estresse com tálio. <span class="feat-highlight">Defeito reversível</span> é fortemente associado a doença cardíaca confirmada.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <h4>cp (tipo de dor)</h4>
+        <p>Angina assintomática (tipo 3) é paradoxalmente a mais comum entre doentes — pacientes <span class="feat-highlight">não sentem dor</span> mas têm patologia real.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <h4>slope</h4>
+        <p>Inclinação do segmento ST no pico do exercício. Inclinações <span class="feat-highlight">planas ou descendentes</span> indicam pior perfil cardiovascular.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MODEL ══ -->
+<section>
+  <div class="container">
+    <div class="section-label">Abordagem Técnica</div>
+    <div class="section-title">Como o modelo foi construído</div>
+    <p class="section-sub">Pipeline completo de ciência de dados, do dado bruto à predição.</p>
+    <div class="model-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Coleta & EDA</h4>
+        <p>Dataset UCI · 270 linhas · 13 features · sem valores nulos. Análise exploratória com Pandas e Matplotlib.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Pré-processamento</h4>
+        <p>StandardScaler para variáveis numéricas · Label encoding para nominais · Split 80/20 estratificado.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Modelagem</h4>
+        <p>Random Forest + Logistic Regression + SVM · GridSearchCV para hiperparâmetros · Cross-validation (k=5).</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Avaliação</h4>
+        <p>Accuracy · Precision · Recall · F1-Score · ROC-AUC · Matriz de confusão.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ RESULTS ══ -->
+<section>
+  <div class="container">
+    <div class="section-label">Resultados</div>
+    <div class="section-title">O modelo em números</div>
+    <p class="section-sub">Random Forest como modelo vencedor após validação cruzada.</p>
+    <div class="result-grid">
+      <div class="metric-list">
+        <div class="metric-item">
+          <div class="top"><span class="name">Acurácia</span><span class="value">85.2%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:85.2%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="top"><span class="name">Precisão</span><span class="value">86.1%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:86.1%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="top"><span class="name">Recall</span><span class="value">83.7%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:83.7%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="top"><span class="name">F1-Score</span><span class="value">84.9%</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:84.9%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="top"><span class="name">ROC-AUC</span><span class="value">0.91</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:91%"></div></div>
+        </div>
+      </div>
+      <div class="insight-box">
+        <h3>💡 O que aprendi</h3>
+        <div class="insight-item"><div class="insight-dot"></div><p><strong>Recall é mais importante que Precision</strong> nesse contexto — é melhor alarmar um falso positivo do que deixar passar um caso real de doença.</p></div>
+        <div class="insight-item"><div class="insight-dot"></div><p><strong>thalach, oldpeak e ca</strong> foram as variáveis de maior importância no Random Forest — confirmando o que a literatura médica já aponta.</p></div>
+        <div class="insight-item"><div class="insight-dot"></div><p>O dataset é <strong>relativamente pequeno</strong> (270 amostras). Técnicas de augmentation ou ensemble poderiam melhorar ainda mais os resultados.</p></div>
+        <div class="insight-item"><div class="insight-dot"></div><p>A fronteira entre <strong>IA e medicina</strong> me fascinou: o modelo errou exatamente onde os dados eram ambíguos — igual a um médico humano.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="container">
+    <p>Desenvolvido por <strong>Felipe Correa</strong> · Dataset: UCI Statlog Heart Disease</p>
+    <div class="footer-links">
+      <a href="https://archive.ics.uci.edu/ml/datasets/statlog+(heart)" target="_blank">📦 Dataset UCI</a>
+      <a href="https://github.com/feipedev" target="_blank">🐙 GitHub</a>
+      <a href="https://felipecvsps.vercel.app/">📄 Currículo</a>
+      <a href="https://portofoliofelipe.vercel.app">🚀 Portfólio</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const cfg = (label, data, colors, type='bar') => ({
+  type, data:{labels:label,datasets:[{data,backgroundColor:colors,borderColor:colors,borderWidth:type==='line'?2:0,fill:type==='line'?false:undefined,tension:.4,pointRadius:type==='line'?4:0}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1f2937'},ticks:{color:'#9ca3af',font:{size:11}}},y:{grid:{color:'#1f2937'},ticks:{color:'#9ca3af',font:{size:11}}}}}
+});
+
+// Sexo
+new Chart(document.getElementById('chartSex'), {
+  type:'bar',
+  data:{labels:['Feminino · Saudável','Feminino · Doente','Masculino · Saudável','Masculino · Doente'],
+    datasets:[{data:[25,57,95,93],backgroundColor:['#10b981','#ef4444','#3b82f6','#f97316'],borderWidth:0}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{grid:{color:'#1f2937'},ticks:{color:'#9ca3af',font:{size:10}}},y:{grid:{color:'#1f2937'},ticks:{color:'#9ca3af'}}}}
+});
+
+// Tipo de dor
+new Chart(document.getElementById('chartCp'), {
+  type:'doughnut',
+  data:{labels:['Típica','Atípica','Não-anginosa','Assintomática'],
+    datasets:[{data:[22,41,65,142],backgroundColor:['#10b981','#3b82f6','#8b5cf6','#ef4444'],borderWidth:0}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#9ca3af',font:{size:11},boxWidth:12}}}}
+});
+
+// Faixa etária
+new Chart(document.getElementById('chartAge'), {
+  type:'bar',
+  data:{labels:['<40','40-49','50-59','60-69','70+'],
+    datasets:[
+      {label:'Saudável',data:[14,32,48,56,12],backgroundColor:'#10b981'},
+      {label:'Doente',data:[4,24,66,48,8],backgroundColor:'#ef4444'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#9ca3af',font:{size:11}}}},
+    scales:{x:{stacked:true,grid:{color:'#1f2937'},ticks:{color:'#9ca3af'}},y:{stacked:true,grid:{color:'#1f2937'},ticks:{color:'#9ca3af'}}}}
+});
+
+// thalach linha
+new Chart(document.getElementById('chartThalach'), {
+  type:'bar',
+  data:{labels:['<120','120-139','140-159','160-179','180+'],
+    datasets:[
+      {label:'Saudável',data:[4,18,42,40,16],backgroundColor:'rgba(16,185,129,.7)'},
+      {label:'Doente', data:[18,30,48,30,12],backgroundColor:'rgba(239,68,68,.7)'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#9ca3af',font:{size:11}}}},
+    scales:{x:{grid:{color:'#1f2937'},ticks:{color:'#9ca3af'}},y:{grid:{color:'#1f2937'},ticks:{color:'#9ca3af'}}}}
+});
+
+// Anima contadores
+function animateNum(el, target, suffix=''){
+  let cur=0; const step=Math.ceil(target/60);
+  const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur+suffix;if(cur>=target)clearInterval(t)},16);
+}
+animateNum(document.getElementById('n-total'),270);
+animateNum(document.getElementById('n-disease'),150);
+</script>
+</body>
+</html>
